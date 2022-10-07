@@ -1,5 +1,57 @@
 const functions = require("firebase-functions");
 
+const express = require("express");
+const PORT = process.env.PORT || 3000;
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerJsDoc = require("swagger-jsdoc");
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "User's API",
+      version: "1.0.0",
+      description: "User's API",
+    },
+    servers: [
+      {
+        url: `http://localhost:${PORT}`,
+      },
+    ],
+  },
+  apis: ["./swagger.js"],
+};
+
+const specs = swaggerJsDoc(options);
+
+const app = express();
+
+app.use("/swagger", swaggerUi.serve, swaggerUi.setup(specs));
+
+app.use(express.json());
+app.use(bodyParser.json());
+var corsOptions = {
+  origin: "http://localhost:3000",
+  optionsSuccessStatus: 200,
+  
+};
+
+app.use(cors());
+
+app.use("/api/users", require("./routes/users.js"));
+app.all("*", (req, res) => {
+  // res.redirect("https://localhost:");
+  res.status(404).send("Page not found");
+});
+
+app.listen(PORT, () => {
+  console.log(`listening on port ${PORT}`);
+});
+
+exports.app = functions.https.onRequest(app);
+
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
 //

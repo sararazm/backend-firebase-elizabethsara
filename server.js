@@ -38,7 +38,7 @@ var corsOptions = {
 
 app.use(cors());
 
-app.use("/api/users", require("./routes/users.js"));
+app.use("/api/users", require("./functions/routes/users.js"));
 app.all("*", (req, res) => {
   // res.redirect("https://localhost:");
   res.status(404).send("Page not found");
